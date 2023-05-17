@@ -1,10 +1,12 @@
 import "./App.css";
 import "antd/dist/reset.css";
-import { Table, Button } from "antd";
+import { Table, Button, Modal, Input } from "antd";
 import { useState } from "react";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 function App() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editStudent, setEditStudent] = useState(null);
   const [dataSource, setDataSource] = useState([
     {
       id: 1,
@@ -58,7 +60,12 @@ function App() {
       render: (record) => {
         return (
           <>
-            <EditOutlined style={{ marginRight: "20px", color: "green" }} />
+            <EditOutlined
+              onClick={() => {
+                handleEditStudent(record);
+              }}
+              style={{ marginRight: "20px", color: "green" }}
+            />
             <DeleteOutlined
               onClick={() => {
                 handledeleteStudent(record);
@@ -82,12 +89,21 @@ function App() {
       return [...prev, newStudent];
     });
   };
-  const handleEditStudent = () => {};
+  const handleEditStudent = (record) => {
+    setIsEditing(true);
+    setEditStudent({ ...record });
+  };
   const handledeleteStudent = (record) => {
-    const newStudent = dataSource?.filter(
-      (student) => student?.id !== record?.id
-    );
-    setDataSource(newStudent);
+    isEditing(true);
+    Modal.confirm({
+      title: "Are You Sure? Once You delete the data you won't restore it.",
+      onOk: () => {
+        const newStudent = dataSource?.filter(
+          (student) => student?.id !== record?.id
+        );
+        setDataSource(newStudent);
+      },
+    });
   };
   return (
     <div className="App">
@@ -96,6 +112,44 @@ function App() {
           Add New Student
         </Button>
         <Table columns={columns} dataSource={dataSource}></Table>
+        <Modal
+          title="Edit Student Info"
+          okText="Save"
+          open={isEditing}
+          onCancel={() => {
+            setIsEditing(false);
+          }}
+          onOk={() => {
+            setIsEditing(false);
+          }}
+        >
+          <Input
+            value={editStudent?.name}
+            style={{ marginBottom: "16px" }}
+            onChange={(e) => {
+              setIsEditing((pre) => {
+                return { ...pre, name: e.target.value };
+              });
+            }}
+          />
+          <Input
+            value={editStudent?.email}
+            style={{ marginBottom: "16px" }}
+            onChange={(e) => {
+              setIsEditing((pre) => {
+                return { ...pre, email: e.target.value };
+              });
+            }}
+          />
+          <Input
+            value={editStudent?.address}
+            onChange={(e) => {
+              setIsEditing((pre) => {
+                return { ...pre, address: e.target.value };
+              });
+            }}
+          />
+        </Modal>
       </header>
     </div>
   );
