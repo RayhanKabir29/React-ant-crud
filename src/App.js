@@ -6,11 +6,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 function App() {
   const [isEditing, setIsEditing] = useState(false);
-  const [editStudent, setEditStudent] = useState({
-    name: "",
-    email: "",
-    address: "",
-  });
+  const [editStudent, setEditStudent] = useState(null);
   const [dataSource, setDataSource] = useState([
     {
       id: 1,
@@ -94,12 +90,6 @@ function App() {
     });
   };
 
-  const handleOnChange = (e) => {
-    console.log("eeee", e.target.name, e.target.value);
-    let st = { ...editStudent };
-    st[e.target.name] = e.target.value;
-    setEditStudent(st);
-  };
   const handleEditStudent = (record) => {
     setIsEditing(true);
     setEditStudent({ ...record });
@@ -116,6 +106,10 @@ function App() {
       },
     });
   };
+  const resetEditing = () => {
+    setIsEditing(false);
+    setEditStudent(null);
+  };
   return (
     <div className="App">
       <header className="App-header">
@@ -128,29 +122,50 @@ function App() {
           okText="Save"
           open={isEditing}
           onCancel={() => {
-            setIsEditing(false);
+            resetEditing();
           }}
           onOk={() => {
-            setIsEditing(false);
+            setDataSource((pre) => {
+              return pre.map((student) => {
+                if (student.id === editStudent.id) {
+                  return editStudent;
+                } else {
+                  return student;
+                }
+              });
+            });
+            resetEditing();
           }}
         >
           <Input
             value={editStudent?.name}
             name="name"
             style={{ marginBottom: "16px" }}
-            onChange={(e) => handleOnChange(e)}
+            onChange={(e) =>
+              setEditStudent((pre) => {
+                return { ...pre, name: e.target.value };
+              })
+            }
           />
           <Input
             value={editStudent?.email}
             name="email"
             style={{ marginBottom: "16px" }}
-            onChange={(e) => handleOnChange(e)}
+            onChange={(e) =>
+              setEditStudent((pre) => {
+                return { ...pre, email: e.target.value };
+              })
+            }
           />
           <Input
             value={editStudent?.address}
             style={{ marginTop: "16px" }}
             name="address"
-            onChange={(e) => handleOnChange(e)}
+            onChange={(e) =>
+              setEditStudent((pre) => {
+                return { ...pre, address: e.target.value };
+              })
+            }
           />
         </Modal>
       </header>
