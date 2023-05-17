@@ -6,7 +6,11 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 function App() {
   const [isEditing, setIsEditing] = useState(false);
-  const [editStudent, setEditStudent] = useState(null);
+  const [editStudent, setEditStudent] = useState({
+    name: "",
+    email: "",
+    address: "",
+  });
   const [dataSource, setDataSource] = useState([
     {
       id: 1,
@@ -89,6 +93,13 @@ function App() {
       return [...prev, newStudent];
     });
   };
+
+  const handleOnChange = (e) => {
+    console.log("eeee", e.target.name, e.target.value);
+    let st = { ...editStudent };
+    st[e.target.name] = e.target.value;
+    setEditStudent(st);
+  };
   const handleEditStudent = (record) => {
     setIsEditing(true);
     setEditStudent({ ...record });
@@ -125,29 +136,21 @@ function App() {
         >
           <Input
             value={editStudent?.name}
+            name="name"
             style={{ marginBottom: "16px" }}
-            onChange={(e) => {
-              setIsEditing((pre) => {
-                return { ...pre, name: e.target.value };
-              });
-            }}
+            onChange={(e) => handleOnChange(e)}
           />
           <Input
             value={editStudent?.email}
+            name="email"
             style={{ marginBottom: "16px" }}
-            onChange={(e) => {
-              setIsEditing((pre) => {
-                return { ...pre, email: e.target.value };
-              });
-            }}
+            onChange={(e) => handleOnChange(e)}
           />
           <Input
             value={editStudent?.address}
-            onChange={(e) => {
-              setIsEditing((pre) => {
-                return { ...pre, address: e.target.value };
-              });
-            }}
+            style={{ marginTop: "16px" }}
+            name="address"
+            onChange={(e) => handleOnChange(e)}
           />
         </Modal>
       </header>
